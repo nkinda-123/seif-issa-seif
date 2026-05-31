@@ -23,8 +23,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-app.get('/portfolio', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 app.get('/api/portfolio', (req, res) => {
@@ -33,13 +33,17 @@ app.get('/api/portfolio', (req, res) => {
 });
 
 app.put('/api/portfolio', (req, res) => {
-  const current = readData();
-  const updated = { ...current, ...req.body };
-  if (req.body.contact) {
-    updated.contact = { ...current.contact, ...req.body.contact };
+  try {
+    const current = readData();
+    const updated = { ...current, ...req.body };
+    if (req.body.contact) {
+      updated.contact = { ...current.contact, ...req.body.contact };
+    }
+    writeData(updated);
+    res.json({ message: 'Saved!', data: updated });
+  } catch (err) {
+    res.status(500).json({ error: 'Could not save data' });
   }
-  writeData(updated);
-  res.json({ message: 'Saved!', data: updated });
 });
 
 app.get('/api/endpoints', (req, res) => {
@@ -50,13 +54,10 @@ app.get('/api/endpoints', (req, res) => {
   ]);
 });
 
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
-
 app.options('*', cors());
 
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`🔧 Admin panel: http://localhost:${PORT}/admin`);
   console.log(`📁 Data file: ${DATA_FILE}`);
 });

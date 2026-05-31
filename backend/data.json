@@ -1,0 +1,118 @@
+{
+  "name": "Seifu Issa Seif",
+  "title": "Data Science Finalist @ EASTC University",
+  "bio": "Transforming data into decisions. I combine statistical thinking with modern machine learning tools to uncover patterns and drive impact.",
+  "photo": "",
+  "about": "I am Seifu Issa Seif, a final year Data Science student at EASTC University with registration number EASTC/BDTS/24/01611. I am passionate about solving real-world problems through data.",
+  "contact": {
+    "email": "seifissah07@gmail.com",
+    "phone": "0627368006",
+    "location": "Tanzania"
+  },
+  "skills": [
+    {
+      "icon": "🐍",
+      "name": "Python",
+      "level": 88
+    },
+    {
+      "icon": "🤖",
+      "name": "Machine Learning",
+      "level": 84
+    },
+    {
+      "icon": "📊",
+      "name": "Data Visualization",
+      "level": 86
+    },
+    {
+      "icon": "🗄️",
+      "name": "SQL",
+      "level": 80
+    },
+    {
+      "icon": "🧠",
+      "name": "Deep Learning",
+      "level": 72
+    },
+    {
+      "icon": "📈",
+      "name": "R Programming",
+      "level": 76
+    },
+    {
+      "icon": "📐",
+      "name": "Statistics",
+      "level": 89
+    },
+    {
+      "icon": "💡",
+      "name": "Power BI",
+      "level": 78
+    },
+    {
+      "icon": "",
+      "name": "fffffffffffff",
+      "level": 80
+    },
+    {
+      "icon": "",
+      "name": "fffffffffff",
+      "level": 80
+    }
+  ],
+  "projects": [
+    {
+      "title": "Malaria Outbreak Prediction",
+      "description": "Built a predictive model to forecast malaria outbreaks in Tanzania using climate data, population density, and historical case records.",
+      "tech": [
+        "Python",
+        "Scikit-learn",
+        "Pandas",
+        "Folium"
+      ]
+    },
+    {
+      "title": "E-Commerce Recommendation Engine",
+      "description": "Developed a collaborative filtering recommendation system to suggest products to users based on their purchase and browsing history.",
+      "tech": [
+        "Python",
+        "Surprise",
+        "Pandas",
+        "Flask"
+      ]
+    },
+    {
+      "title": "Road Accident Analysis Tanzania",
+      "description": "Analyzed road accident data across Tanzania to identify high-risk zones and time patterns using statistical methods and geospatial mapping.",
+      "tech": [
+        "R",
+        "ggplot2",
+        "Leaflet",
+        "Statistics"
+      ]
+    },
+    {
+      "title": "Student Dropout Prediction",
+      "description": "Created a classification model to predict student dropout risk at university level using academic and socioeconomic features.",
+      "tech": [
+        "Python",
+        "XGBoost",
+        "Scikit-learn",
+        "Matplotlib"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "year": "2021 – 2025",
+      "degree": "BSc Data Science (Finalist) — EASTC/BDTS/24/01611",
+      "institution": "Eastern Africa Statistical Training Centre (EASTC), Tanzania"
+    },
+    {
+      "year": "2018 – 2021",
+      "degree": "Advanced Secondary Education (A-Level)",
+      "institution": "Tanzania"
+    }
+  ]
+}

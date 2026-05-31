@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel | Seifu's Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --dark:#1a0a0a;--dark2:#221010;--dark3:#2e1515;
+      --red:#e63946;--orange:#ff6b35;--orange2:#ff9f1c;
+      --white:#f5f0f0;--gray:#a08080;
+    }
+    body{font-family:'Poppins',sans-serif;background:var(--dark);color:var(--white);}
+
+    .admin-header{
+      background:var(--dark2);border-bottom:2px solid var(--red);
+      padding:20px 40px;display:flex;align-items:center;justify-content:space-between;
+    }
+    .admin-header h1{font-family:'Montserrat',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;}
+    .admin-header h1 span{color:var(--orange);}
+    .back-btn{
+      background:transparent;border:2px solid var(--orange);color:var(--orange);
+      padding:8px 20px;border-radius:50px;cursor:pointer;
+      font-family:'Poppins',sans-serif;font-size:0.85rem;text-decoration:none;transition:all 0.3s;
+    }
+    .back-btn:hover{background:rgba(255,107,53,0.1);}
+
+    .admin-container{display:flex;min-height:calc(100vh - 72px);}
+    .sidebar{width:240px;background:var(--dark2);border-right:1px solid rgba(230,57,70,0.1);padding:30px 0;flex-shrink:0;}
+    .sidebar-item{
+      padding:14px 30px;cursor:pointer;color:var(--gray);font-size:0.9rem;
+      display:flex;align-items:center;gap:12px;transition:all 0.3s;
+      border-left:3px solid transparent;
+    }
+    .sidebar-item:hover,.sidebar-item.active{color:var(--orange);background:rgba(255,107,53,0.05);border-left-color:var(--orange);}
+
+    .admin-main{flex:1;padding:40px;overflow-y:auto;}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
+    .tab-title{font-family:'Montserrat',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--white);margin-bottom:30px;padding-bottom:15px;border-bottom:1px solid rgba(230,57,70,0.15);}
+    .tab-title span{color:var(--orange);}
+
+    .api-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+    .api-card{
+      background:var(--dark2);border:1px solid rgba(230,57,70,0.15);
+      border-radius:12px;padding:25px;transition:all 0.3s;
+      border-top:3px solid var(--red);
+    }
+    .api-card:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(230,57,70,0.15);}
+    .api-method{display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;letter-spacing:1px;margin-bottom:12px;}
+    .method-get{background:rgba(230,57,70,0.15);color:var(--red);}
+    .method-put{background:rgba(255,107,53,0.15);color:var(--orange);}
+    .api-card h3{font-size:0.95rem;font-weight:600;margin-bottom:8px;color:var(--white);font-family:monospace;}
+    .api-card p{color:var(--gray);font-size:0.85rem;}
+    .test-btn{
+      margin-top:15px;background:rgba(230,57,70,0.1);border:1px solid var(--red);
+      color:var(--red);padding:6px 16px;border-radius:20px;cursor:pointer;
+      font-size:0.8rem;font-family:'Poppins',sans-serif;transition:all 0.3s;
+    }
+    .test-btn:hover{background:rgba(230,57,70,0.2);}
+    .api-response{
+      margin-top:12px;background:var(--dark3);border-radius:8px;padding:12px;
+      font-size:0.78rem;font-family:monospace;color:var(--orange2);
+      display:none;max-height:150px;overflow-y:auto;word-break:break-all;
+    }
+
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .form-group{display:flex;flex-direction:column;gap:8px;}
+    .form-group.full{grid-column:1/-1;}
+    .form-group label{color:var(--orange);font-size:0.8rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+    .form-group input,.form-group textarea{
+      background:var(--dark2);border:1px solid rgba(230,57,70,0.2);border-radius:8px;
+      padding:12px 16px;color:var(--white);font-family:'Poppins',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.3s;
+    }
+    .form-group input:focus,.form-group textarea:focus{border-color:var(--orange);}
+    .form-group textarea{resize:vertical;min-height:100px;}
+    .save-btn{
+      margin-top:30px;
+      background:linear-gradient(90deg, var(--red), var(--orange));
+      color:var(--white);border:none;
+      padding:14px 40px;border-radius:50px;font-family:'Poppins',sans-serif;
+      font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;
+      box-shadow:0 4px 20px rgba(230,57,70,0.3);
+    }
+    .save-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(230,57,70,0.5);}
+
+    .toast{
+      position:fixed;bottom:30px;right:30px;
+      background:linear-gradient(90deg, var(--red), var(--orange));
+      color:var(--white);padding:14px 28px;border-radius:50px;font-weight:700;font-size:0.9rem;
+      opacity:0;transform:translateY(20px);transition:all 0.4s;z-index:9999;
+    }
+    .toast.show{opacity:1;transform:translateY(0);}
+
+    .skills-editor{display:flex;flex-direction:column;gap:15px;}
+    .skill-row{
+      display:flex;align-items:center;gap:12px;
+      background:var(--dark2);border:1px solid rgba(230,57,70,0.1);border-radius:10px;padding:16px;
+    }
+    .skill-row input{
+      background:var(--dark3);border:1px solid rgba(230,57,70,0.2);border-radius:6px;
+      padding:8px 12px;color:var(--white);font-family:'Poppins',sans-serif;font-size:0.85rem;outline:none;
+    }
+    .skill-row input:focus{border-color:var(--orange);}
+    .skill-row input.icon{width:70px;text-align:center;}
+    .skill-row input.name{flex:1;}
+    .skill-row input.level{width:80px;}
+    .del-btn{background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);color:#ff5050;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.8rem;}
+    .add-btn{
+      background:rgba(230,57,70,0.1);border:2px dashed var(--red);color:var(--red);
+      padding:12px;border-radius:10px;cursor:pointer;font-family:'Poppins',sans-serif;font-size:0.9rem;transition:all 0.3s;
+    }
+    .add-btn:hover{background:rgba(230,57,70,0.15);}
+
+    /* Mobile Responsive Design */
+    @media (max-width: 1024px) {
+      .admin-header{padding:16px 25px;}
+      .admin-header h1{font-size:1.3rem;}
+      .admin-main{padding:25px;}
+      .sidebar{width:200px;}
+      .sidebar-item{padding:12px 20px;font-size:0.85rem;}
+    }
+
+    @media (max-width: 768px) {
+      .admin-header{
+        flex-direction:column;gap:15px;text-align:center;
+        padding:15px 20px;border-bottom:2px solid var(--red);
+      }
+      .admin-header h1{font-size:1.2rem;letter-spacing:1px;}
+      .back-btn{align-self:flex-start;font-size:0.75rem;}
+
+      .admin-container{flex-direction:column;min-height:auto;}
+      .sidebar{
+        width:100%;border-right:none;border-bottom:1px solid rgba(230,57,70,0.1);
+        padding:12px 0;display:flex;overflow-x:auto;flex-shrink:0;
+      }
+      .sidebar-item{
+        padding:10px 16px;white-space:nowrap;flex-shrink:0;
+        border-left:none;border-bottom:3px solid transparent;
+      }
+      .sidebar-item:hover,.sidebar-item.active{
+        border-bottom-color:var(--orange);border-left-color:transparent;
+        background:rgba(255,107,53,0.05);
+      }
+
+      .admin-main{padding:20px;}
+      .tab-title{font-size:1.3rem;margin-bottom:20px;}
+
+      .form-grid{grid-template-columns:1fr;gap:15px;}
+      .form-group{gap:6px;}
+      .form-group input,.form-group textarea{padding:10px 12px;font-size:0.9rem;}
+      .form-group label{font-size:0.75rem;}
+
+      .api-cards{grid-template-columns:1fr;gap:15px;}
+      .api-card{padding:18px;border-radius:10px;}
+      .api-card h3{font-size:0.85rem;}
+      .api-card p{font-size:0.8rem;}
+      .test-btn{padding:5px 12px;font-size:0.75rem;margin-top:12px;}
+
+      .skill-row{
+        flex-wrap:wrap;gap:10px;padding:12px;
+        align-items:flex-start;
+      }
+      .skill-row input{padding:8px 10px;font-size:0.8rem;}
+      .skill-row input.icon{width:60px;}
+      .skill-row input.name{flex:1;min-width:120px;}
+      .skill-row input.level{width:70px;}
+      .del-btn{padding:5px 10px;font-size:0.75rem;}
+
+      .save-btn{
+        padding:12px 30px;font-size:0.95rem;margin-top:20px;width:100%;
+      }
+      .add-btn{padding:10px;font-size:0.85rem;width:100%;margin-top:12px;}
+
+      .toast{bottom:20px;right:20px;padding:12px 20px;font-size:0.85rem;}
+
+      .back-btn{padding:6px 16px;font-size:0.7rem;}
+    }
+
+    @media (max-width: 480px) {
+      .admin-header{padding:12px 16px;}
+      .admin-header h1{font-size:1rem;letter-spacing:0.5px;}
+      .back-btn{padding:5px 12px;font-size:0.65rem;}
+
+      .sidebar{padding:10px 0;}
+      .sidebar-item{
+        padding:8px 12px;font-size:0.75rem;gap:6px;
+      }
+      .sidebar-item i{font-size:0.9rem;}
+
+      .admin-main{padding:15px;overflow-y:auto;}
+      .tab-title{font-size:1.1rem;margin-bottom:18px;letter-spacing:0.5px;}
+
+      .form-group input,.form-group textarea{
+        padding:8px 10px;font-size:0.85rem;
+      }
+      .form-group label{font-size:0.7rem;}
+      .form-group textarea{min-height:80px;}
+
+      .api-method{padding:3px 10px;font-size:0.65rem;margin-bottom:8px;}
+      .api-card{padding:14px;border-radius:8px;}
+      .api-card h3{font-size:0.75rem;margin-bottom:6px;}
+      .api-card p{font-size:0.7rem;}
+      .test-btn{padding:4px 10px;font-size:0.65rem;margin-top:10px;}
+      .api-response{padding:8px;font-size:0.65rem;max-height:120px;}
+
+      .skill-row{padding:10px;gap:8px;}
+      .skill-row input{padding:6px 8px;font-size:0.75rem;}
+      .skill-row input.icon{width:50px;}
+      .skill-row input.name{min-width:100px;}
+      .skill-row input.level{width:60px;}
+      .del-btn{padding:4px 8px;font-size:0.65rem;}
+
+      .save-btn{padding:10px 20px;font-size:0.85rem;margin-top:15px;}
+      .add-btn{padding:8px;font-size:0.8rem;margin-top:10px;}
+
+      .toast{bottom:15px;right:15px;padding:10px 16px;font-size:0.8rem;border-radius:30px;}
+    }
+
+    @media (max-width: 360px) {
+      .admin-header h1{font-size:0.9rem;}
+      .sidebar-item{padding:6px 10px;font-size:0.65rem;}
+      .admin-main{padding:12px;}
+      .tab-title{font-size:0.95rem;}
+      .form-group input,.form-group textarea{font-size:0.8rem;}
+      .api-card{padding:12px;}
+      .save-btn{padding:8px 16px;font-size:0.8rem;}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-header">
+    <h1>🔥 Admin <span>Panel</span></h1>
+    <a href="/" class="back-btn">← Portfolio</a>
+  </div>
+
+  <div class="admin-container">
+    <div class="sidebar">
+      <div class="sidebar-item active" onclick="showTab('apis', this)"><i class="fas fa-plug"></i> API Endpoints</div>
+      <div class="sidebar-item" onclick="showTab('profile', this)"><i class="fas fa-user"></i> Edit Profile</div>
+      <div class="sidebar-item" onclick="showTab('skills', this)"><i class="fas fa-code"></i> Edit Skills</div>
+      <div class="sidebar-item" onclick="showTab('contact', this)"><i class="fas fa-envelope"></i> Edit Contact</div>
+    </div>
+
+    <div class="admin-main">
+
+      <div class="tab-content active" id="tab-apis">
+        <h2 class="tab-title">API <span>Endpoints</span></h2>
+        <div class="api-cards" id="api-cards-container"><p style="color:var(--gray)">Loading APIs...</p></div>
+      </div>
+
+      <div class="tab-content" id="tab-profile">
+        <h2 class="tab-title">Edit <span>Profile</span></h2>
+        <div class="form-grid">
+          <div class="form-group"><label>Full Name</label><input type="text" id="edit-name"/></div>
+          <div class="form-group"><label>Title / Role</label><input type="text" id="edit-title"/></div>
+          <div class="form-group"><label>Photo URL</label><input type="text" id="edit-photo"/></div>
+          <div class="form-group full"><label>Short Bio</label><textarea id="edit-bio"></textarea></div>
+          <div class="form-group full"><label>About Me</label><textarea id="edit-about"></textarea></div>
+        </div>
+        <button class="save-btn" onclick="saveProfile()">💾 Save Profile</button>
+      </div>
+
+      <div class="tab-content" id="tab-skills">
+        <h2 class="tab-title">Edit <span>Skills</span></h2>
+        <div class="skills-editor" id="skills-editor"></div>
+        <button class="add-btn" onclick="addSkillRow()" style="margin-top:15px">+ Add Skill</button>
+        <button class="save-btn" onclick="saveSkills()">💾 Save Skills</button>
+      </div>
+
+      <div class="tab-content" id="tab-contact">
+        <h2 class="tab-title">Edit <span>Contact</span></h2>
+        <div class="form-grid">
+          <div class="form-group"><label>Email</label><input type="text" id="edit-email"/></div>
+          <div class="form-group"><label>Phone</label><input type="text" id="edit-phone"/></div>
+          <div class="form-group"><label>Location</label><input type="text" id="edit-location"/></div>
+        </div>
+        <button class="save-btn" onclick="saveContact()">💾 Save Contact</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="toast" id="toast">✅ Saved!</div>
+
+  <script>
+    const API = 'https://seif-issa-seif.onrender.com';
+    let currentData = {};
+
+    async function init() {
+      await loadData();
+      loadAPIs();
+      fillForms();
+    }
+
+    async function loadData() {
+      const res = await fetch(`${API}/api/portfolio`);
+      currentData = await res.json();
+    }
+
+    async function loadAPIs() {
+      const res = await fetch(`${API}/api/endpoints`);
+      const apis = await res.json();
+      const container = document.getElementById('api-cards-container');
+      container.innerHTML = '';
+      apis.forEach(api => {
+        container.innerHTML += `
+          <div class="api-card">
+            <span class="api-method method-${api.method.toLowerCase()}">${api.method}</span>
+            <h3>${api.route}</h3>
+            <p>${api.description}</p>
+            <button class="test-btn" onclick="testApi('${api.route}', this)">▶ Test</button>
+            <div class="api-response" id="res-${api.route.replace(/\//g,'-')}"></div>
+          </div>`;
+      });
+    }
+
+    async function testApi(route, btn) {
+      const id = 'res-' + route.replace(/\//g, '-');
+      const box = document.getElementById(id);
+      box.style.display = 'block';
+      box.textContent = 'Loading...';
+      try {
+        const res = await fetch(`${API}${route}`);
+        const data = await res.json();
+        box.textContent = JSON.stringify(data, null, 2);
+      } catch(e) {
+        box.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    function fillForms() {
+      document.getElementById('edit-name').value = currentData.name || '';
+      document.getElementById('edit-title').value = currentData.title || '';
+      document.getElementById('edit-bio').value = currentData.bio || '';
+      document.getElementById('edit-about').value = currentData.about || '';
+      document.getElementById('edit-photo').value = currentData.photo || '';
+      if (currentData.contact) {
+        document.getElementById('edit-email').value = currentData.contact.email || '';
+        document.getElementById('edit-phone').value = currentData.contact.phone || '';
+        document.getElementById('edit-location').value = currentData.contact.location || '';
+      }
+      if (currentData.skills) renderSkillsEditor(currentData.skills);
+    }
+
+    function renderSkillsEditor(skills) {
+      const editor = document.getElementById('skills-editor');
+      editor.innerHTML = '';
+      skills.forEach(s => {
+        editor.innerHTML += `
+          <div class="skill-row">
+            <input class="icon" type="text" value="${s.icon}" placeholder="🐍"/>
+            <input class="name" type="text" value="${s.name}" placeholder="Skill name"/>
+            <input class="level" type="number" min="0" max="100" value="${s.level}"/>
+            <button class="del-btn" onclick="this.parentElement.remove()">✕</button>
+          </div>`;
+      });
+    }
+
+    function addSkillRow() {
+      document.getElementById('skills-editor').innerHTML += `
+        <div class="skill-row">
+          <input class="icon" type="text" value="" placeholder="🐍"/>
+          <input class="name" type="text" value="" placeholder="Skill name"/>
+          <input class="level" type="number" min="0" max="100" value="80"/>
+          <button class="del-btn" onclick="this.parentElement.remove()">✕</button>
+        </div>`;
+    }
+
+    async function saveProfile() {
+      await fetch(`${API}/api/portfolio`, {
+        method:'PUT', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          name: document.getElementById('edit-name').value,
+          title: document.getElementById('edit-title').value,
+          bio: document.getElementById('edit-bio').value,
+          about: document.getElementById('edit-about').value,
+          photo: document.getElementById('edit-photo').value,
+        })
+      });
+      showToast('Profile saved!');
+    }
+
+    async function saveSkills() {
+      const rows = document.querySelectorAll('.skill-row');
+      const skills = Array.from(rows).map(row => {
+        const inputs = row.querySelectorAll('input');
+        return { icon: inputs[0].value, name: inputs[1].value, level: parseInt(inputs[2].value) };
+      });
+      await fetch(`${API}/api/portfolio`, {
+        method:'PUT', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ skills })
+      });
+      showToast('Skills saved!');
+    }
+
+    async function saveContact() {
+      await fetch(`${API}/api/portfolio`, {
+        method:'PUT', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          contact: {
+            email: document.getElementById('edit-email').value,
+            phone: document.getElementById('edit-phone').value,
+            location: document.getElementById('edit-location').value,
+          }
+        })
+      });
+      showToast('Contact saved!');
+    }
+
+    function showTab(tab, el) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      el.classList.add('active');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = '✅ ' + msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    init();
+  </script>
+</body>
+</html>
